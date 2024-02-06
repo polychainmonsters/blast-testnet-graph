@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: Generic ERC721 Subgraph
-repository: ""
+repository: ''
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,9 +8,9 @@ dataSources:
     name: BondingCurveMons
     network: blast-testnet
     source:
-      address: '0x9E29B75B399f5367491fE38Da7dAF07dA1031D11'
+      address: '0xc97a9F519A83C7639cFa9482b80D856502F992bc'
       abi: ERC721
-      startBlock: 1223801
+      startBlock: 1274548
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
