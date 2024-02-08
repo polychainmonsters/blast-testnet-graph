@@ -203,12 +203,44 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "randomness",
+        "type": "uint256"
+      }
+    ],
+    "name": "FulfillEpochRevealed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint64",
         "name": "version",
         "type": "uint64"
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewEpochScheduled",
     "type": "event"
   },
   {
@@ -265,6 +297,25 @@
       }
     ],
     "name": "Purchase",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenIds",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nextRevealTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "RevealRequested",
     "type": "event"
   },
   {
@@ -555,6 +606,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "epochToRandomness",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "fee",
     "outputs": [
@@ -581,6 +651,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "fulfillRevealEpoch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -594,6 +671,19 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -650,6 +740,57 @@
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMonsterByTokenId",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum PackType",
+            "name": "packType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum MonsterType",
+            "name": "monsterType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Horn",
+            "name": "horn",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Color",
+            "name": "color",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Background",
+            "name": "background",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Glitter",
+            "name": "glitter",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Monster",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -827,6 +968,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "requestRevealForTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1018,24 +1172,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "args_tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "args_randomness",
-        "type": "uint256"
-      }
-    ],
-    "name": "setTokenIdToRandomness",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "contract ITokenUriProvider",
         "name": "args_tokenUriProvider",
         "type": "address"
@@ -1079,10 +1215,42 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "timestampForNextReveal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenIdToEpoch",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],

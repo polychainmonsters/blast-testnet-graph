@@ -118,6 +118,23 @@ export class Token extends Entity {
       this.set("contract", Value.fromString(value as string));
     }
   }
+
+  get epoch(): string | null {
+    let value = this.get("epoch");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set epoch(value: string | null) {
+    if (value === null) {
+      this.unset("epoch");
+    } else {
+      this.set("epoch", Value.fromString(value as string));
+    }
+  }
 }
 
 export class Wallet extends Entity {
@@ -375,5 +392,97 @@ export class Transfer extends Entity {
 
   set transactionHash(value: string) {
     this.set("transactionHash", Value.fromString(value));
+  }
+}
+
+export class Epoch extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Epoch entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Epoch entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Epoch", id.toString(), this);
+  }
+
+  static load(id: string): Epoch | null {
+    return store.get("Epoch", id) as Epoch | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get startBlock(): BigInt {
+    let value = this.get("startBlock");
+    return value.toBigInt();
+  }
+
+  set startBlock(value: BigInt) {
+    this.set("startBlock", Value.fromBigInt(value));
+  }
+
+  get endBlock(): BigInt | null {
+    let value = this.get("endBlock");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set endBlock(value: BigInt | null) {
+    if (value === null) {
+      this.unset("endBlock");
+    } else {
+      this.set("endBlock", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get randomness(): BigInt | null {
+    let value = this.get("randomness");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set randomness(value: BigInt | null) {
+    if (value === null) {
+      this.unset("randomness");
+    } else {
+      this.set("randomness", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get tokens(): Array<string> {
+    let value = this.get("tokens");
+    return value.toStringArray();
+  }
+
+  set tokens(value: Array<string>) {
+    this.set("tokens", Value.fromStringArray(value));
   }
 }

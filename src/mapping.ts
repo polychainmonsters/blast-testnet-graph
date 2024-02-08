@@ -1,9 +1,12 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
   ERC721,
-  Transfer as TransferEvent
+  Transfer as TransferEvent,
+  NewEpochScheduled as NewEpochScheduledEvent,
+  FulfillEpochRevealed as FulfillEpochRevealedEvent,
+  RevealRequested as RevealRequestedEvent
 } from "../generated/BondingCurveMons/ERC721";
-import { Token, Wallet, Contract, Transfer } from "../generated/schema";
+import { Token, Wallet, Contract, Transfer, Epoch } from "../generated/schema";
 
 export function handleTransfer(event: TransferEvent): void {
   log.debug("Transfer detected. From: {} | To: {} | TokenID: {}", [
@@ -76,4 +79,23 @@ export function handleTransfer(event: TransferEvent): void {
   token.save();
   contract.save();
   transfer.save();
+}
+
+export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
+  // we create a new epoch entity
+  let epoch = new Epoch(event.params.timestamp.toHexString());
+  epoch.startBlock = event.block.number;
+  epoch.timestamp = event.params.timestamp;
+  epoch.save();
+}
+
+export function handleFulfillEpochRevealed(
+  event: FulfillEpochRevealedEvent
+): void {}
+
+export function handleRevealRequested(event: RevealRequestedEvent): void {
+  // we fetch the epoch entity
+  let epoch = Epoch.load(event.params.nextRevealTimestamp.toHexString());
+
+  // and for all the tokenids
 }

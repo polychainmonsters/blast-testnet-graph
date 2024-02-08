@@ -92,6 +92,28 @@ export class ConsecutiveTransfer__Params {
   }
 }
 
+export class FulfillEpochRevealed extends ethereum.Event {
+  get params(): FulfillEpochRevealed__Params {
+    return new FulfillEpochRevealed__Params(this);
+  }
+}
+
+export class FulfillEpochRevealed__Params {
+  _event: FulfillEpochRevealed;
+
+  constructor(event: FulfillEpochRevealed) {
+    this._event = event;
+  }
+
+  get timestamp(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get randomness(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -106,6 +128,24 @@ export class Initialized__Params {
   }
 
   get version(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class NewEpochScheduled extends ethereum.Event {
+  get params(): NewEpochScheduled__Params {
+    return new NewEpochScheduled__Params(this);
+  }
+}
+
+export class NewEpochScheduled__Params {
+  _event: NewEpochScheduled;
+
+  constructor(event: NewEpochScheduled) {
+    this._event = event;
+  }
+
+  get timestamp(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 }
@@ -163,6 +203,28 @@ export class Purchase__Params {
 
   get protocolFee(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+}
+
+export class RevealRequested extends ethereum.Event {
+  get params(): RevealRequested__Params {
+    return new RevealRequested__Params(this);
+  }
+}
+
+export class RevealRequested__Params {
+  _event: RevealRequested;
+
+  constructor(event: RevealRequested) {
+    this._event = event;
+  }
+
+  get tokenIds(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get nextRevealTimestamp(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -246,6 +308,32 @@ export class ERC721__bondingCurveSpecsResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
     return map;
+  }
+}
+
+export class ERC721__getMonsterByTokenIdResultValue0Struct extends ethereum.Tuple {
+  get packType(): i32 {
+    return this[0].toI32();
+  }
+
+  get monsterType(): i32 {
+    return this[1].toI32();
+  }
+
+  get horn(): i32 {
+    return this[2].toI32();
+  }
+
+  get color(): i32 {
+    return this[3].toI32();
+  }
+
+  get background(): i32 {
+    return this[4].toI32();
+  }
+
+  get glitter(): i32 {
+    return this[5].toI32();
   }
 }
 
@@ -486,6 +574,29 @@ export class ERC721 extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  epochToRandomness(param0: BigInt): BigInt {
+    let result = super.call(
+      "epochToRandomness",
+      "epochToRandomness(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_epochToRandomness(param0: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "epochToRandomness",
+      "epochToRandomness(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   fee(): BigInt {
     let result = super.call("fee", "fee():(uint256)", []);
 
@@ -535,6 +646,21 @@ export class ERC721 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getBalance(): BigInt {
+    let result = super.call("getBalance", "getBalance():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_getBalance(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("getBalance", "getBalance():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   getBuyPriceInclFees(args_amount: BigInt): BigInt {
@@ -601,6 +727,35 @@ export class ERC721 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getMonsterByTokenId(
+    tokenId: BigInt
+  ): ERC721__getMonsterByTokenIdResultValue0Struct {
+    let result = super.call(
+      "getMonsterByTokenId",
+      "getMonsterByTokenId(uint256):((uint8,uint8,uint8,uint8,uint8,uint8))",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+
+    return result[0].toTuple() as ERC721__getMonsterByTokenIdResultValue0Struct;
+  }
+
+  try_getMonsterByTokenId(
+    tokenId: BigInt
+  ): ethereum.CallResult<ERC721__getMonsterByTokenIdResultValue0Struct> {
+    let result = super.tryCall(
+      "getMonsterByTokenId",
+      "getMonsterByTokenId(uint256):((uint8,uint8,uint8,uint8,uint8,uint8))",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      value[0].toTuple() as ERC721__getMonsterByTokenIdResultValue0Struct
+    );
   }
 
   getPrice(supply: BigInt, amount: BigInt): BigInt {
@@ -764,21 +919,67 @@ export class ERC721 extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toString());
   }
 
-  tokenIdToRandomness(param0: BigInt): BigInt {
+  timestampForNextReveal(): BigInt {
     let result = super.call(
-      "tokenIdToRandomness",
-      "tokenIdToRandomness(uint256):(uint256)",
+      "timestampForNextReveal",
+      "timestampForNextReveal():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_timestampForNextReveal(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "timestampForNextReveal",
+      "timestampForNextReveal():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  tokenIdToEpoch(param0: BigInt): BigInt {
+    let result = super.call(
+      "tokenIdToEpoch",
+      "tokenIdToEpoch(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_tokenIdToRandomness(param0: BigInt): ethereum.CallResult<BigInt> {
+  try_tokenIdToEpoch(param0: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "tokenIdToEpoch",
+      "tokenIdToEpoch(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  tokenIdToRandomness(tokenId: BigInt): BigInt {
+    let result = super.call(
+      "tokenIdToRandomness",
+      "tokenIdToRandomness(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_tokenIdToRandomness(tokenId: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "tokenIdToRandomness",
       "tokenIdToRandomness(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1081,6 +1282,32 @@ export class ClaimMaxGasCall__Outputs {
   }
 }
 
+export class FulfillRevealEpochCall extends ethereum.Call {
+  get inputs(): FulfillRevealEpochCall__Inputs {
+    return new FulfillRevealEpochCall__Inputs(this);
+  }
+
+  get outputs(): FulfillRevealEpochCall__Outputs {
+    return new FulfillRevealEpochCall__Outputs(this);
+  }
+}
+
+export class FulfillRevealEpochCall__Inputs {
+  _call: FulfillRevealEpochCall;
+
+  constructor(call: FulfillRevealEpochCall) {
+    this._call = call;
+  }
+}
+
+export class FulfillRevealEpochCall__Outputs {
+  _call: FulfillRevealEpochCall;
+
+  constructor(call: FulfillRevealEpochCall) {
+    this._call = call;
+  }
+}
+
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -1171,6 +1398,36 @@ export class RenounceOwnershipCall__Outputs {
   _call: RenounceOwnershipCall;
 
   constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class RequestRevealForTokensCall extends ethereum.Call {
+  get inputs(): RequestRevealForTokensCall__Inputs {
+    return new RequestRevealForTokensCall__Inputs(this);
+  }
+
+  get outputs(): RequestRevealForTokensCall__Outputs {
+    return new RequestRevealForTokensCall__Outputs(this);
+  }
+}
+
+export class RequestRevealForTokensCall__Inputs {
+  _call: RequestRevealForTokensCall;
+
+  constructor(call: RequestRevealForTokensCall) {
+    this._call = call;
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+}
+
+export class RequestRevealForTokensCall__Outputs {
+  _call: RequestRevealForTokensCall;
+
+  constructor(call: RequestRevealForTokensCall) {
     this._call = call;
   }
 }
@@ -1495,40 +1752,6 @@ export class SetFeeReceiverCall__Outputs {
   _call: SetFeeReceiverCall;
 
   constructor(call: SetFeeReceiverCall) {
-    this._call = call;
-  }
-}
-
-export class SetTokenIdToRandomnessCall extends ethereum.Call {
-  get inputs(): SetTokenIdToRandomnessCall__Inputs {
-    return new SetTokenIdToRandomnessCall__Inputs(this);
-  }
-
-  get outputs(): SetTokenIdToRandomnessCall__Outputs {
-    return new SetTokenIdToRandomnessCall__Outputs(this);
-  }
-}
-
-export class SetTokenIdToRandomnessCall__Inputs {
-  _call: SetTokenIdToRandomnessCall;
-
-  constructor(call: SetTokenIdToRandomnessCall) {
-    this._call = call;
-  }
-
-  get args_tokenId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get args_randomness(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class SetTokenIdToRandomnessCall__Outputs {
-  _call: SetTokenIdToRandomnessCall;
-
-  constructor(call: SetTokenIdToRandomnessCall) {
     this._call = call;
   }
 }
