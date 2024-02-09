@@ -6,7 +6,14 @@ import {
   FulfillEpochRevealed as FulfillEpochRevealedEvent,
   RevealRequested as RevealRequestedEvent
 } from "../generated/BondingCurveMons/ERC721";
-import { Token, Wallet, Contract, Transfer, Epoch } from "../generated/schema";
+import {
+  Token,
+  Wallet,
+  Contract,
+  Transfer,
+  Epoch,
+  Transaction
+} from "../generated/schema";
 
 export function handleTransfer(event: TransferEvent): void {
   log.debug("Transfer detected. From: {} | To: {} | TokenID: {}", [
@@ -79,6 +86,11 @@ export function handleTransfer(event: TransferEvent): void {
   token.save();
   contract.save();
   transfer.save();
+
+  // generate a new Transaction entity
+  let transaction = new Transaction(event.transaction.hash.toHexString());
+  transaction.hash = event.transaction.hash.toString();
+  transaction.save();
 }
 
 export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
@@ -87,6 +99,10 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   epoch.startBlock = event.block.number;
   epoch.timestamp = event.params.timestamp;
   epoch.save();
+  // generate a new Transaction entity
+  let transaction = new Transaction(event.transaction.hash.toHexString());
+  transaction.hash = event.transaction.hash.toString();
+  transaction.save();
 }
 
 export function handleFulfillEpochRevealed(
@@ -103,6 +119,11 @@ export function handleFulfillEpochRevealed(
   epoch.endBlock = event.block.number;
   epoch.randomness = event.params.randomness;
   epoch.save();
+
+  // generate a new Transaction entity
+  let transaction = new Transaction(event.transaction.hash.toHexString());
+  transaction.hash = event.transaction.hash.toString();
+  transaction.save();
 }
 
 export function handleRevealRequested(event: RevealRequestedEvent): void {
@@ -124,4 +145,9 @@ export function handleRevealRequested(event: RevealRequestedEvent): void {
   }
   token.epoch = epoch.id;
   token.save();
+
+  // generate a new Transaction entity
+  let transaction = new Transaction(event.transaction.hash.toHexString());
+  transaction.hash = event.transaction.hash.toString();
+  transaction.save();
 }

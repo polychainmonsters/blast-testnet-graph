@@ -21,6 +21,7 @@ dataSources:
         - Contract
         - Transfer
         - Epoch
+        - Transaction
       abis:
         - name: ERC721
           file: ./abis/ERC721.json
