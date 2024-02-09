@@ -8,7 +8,7 @@ dataSources:
     name: BondingCurveMons
     network: polymon-testnet
     source:
-      address: '0xFDcBF7006Ed23CC69A16037933AF70be855A3D15'
+      address: '0x50Ba51F4012bDB433906F7bbefc25539cAe7De4F'
       abi: ERC721
       startBlock: 25405
     mapping:
