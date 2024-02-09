@@ -89,7 +89,7 @@ export function handleTransfer(event: TransferEvent): void {
 
   // generate a new Transaction entity
   let transaction = new Transaction(event.transaction.hash.toHexString());
-  transaction.hash = event.transaction.hash.toString();
+
   transaction.save();
 }
 
@@ -101,7 +101,7 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   epoch.save();
   // generate a new Transaction entity
   let transaction = new Transaction(event.transaction.hash.toHexString());
-  transaction.hash = event.transaction.hash.toString();
+
   transaction.save();
 }
 
@@ -122,7 +122,7 @@ export function handleFulfillEpochRevealed(
 
   // generate a new Transaction entity
   let transaction = new Transaction(event.transaction.hash.toHexString());
-  transaction.hash = event.transaction.hash.toString();
+
   transaction.save();
 }
 
@@ -148,6 +148,5 @@ export function handleRevealRequested(event: RevealRequestedEvent): void {
 
   // generate a new Transaction entity
   let transaction = new Transaction(event.transaction.hash.toHexString());
-  transaction.hash = event.transaction.hash.toString();
   transaction.save();
 }
