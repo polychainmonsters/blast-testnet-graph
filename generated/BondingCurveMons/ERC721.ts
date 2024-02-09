@@ -219,7 +219,7 @@ export class RevealRequested__Params {
     this._event = event;
   }
 
-  get tokenIds(): BigInt {
+  get tokenId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 

@@ -305,7 +305,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "tokenIds",
+        "name": "tokenId",
         "type": "uint256"
       },
       {

@@ -91,11 +91,37 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
 
 export function handleFulfillEpochRevealed(
   event: FulfillEpochRevealedEvent
-): void {}
+): void {
+  // we fetch the epoch entity
+  let epoch = Epoch.load(event.params.timestamp.toHexString());
+
+  if (epoch == null) {
+    log.debug("Epoch not found: {}", [event.params.timestamp.toHexString()]);
+    return;
+  }
+
+  epoch.endBlock = event.block.number;
+  epoch.randomness = event.params.randomness;
+  epoch.save();
+}
 
 export function handleRevealRequested(event: RevealRequestedEvent): void {
   // we fetch the epoch entity
   let epoch = Epoch.load(event.params.nextRevealTimestamp.toHexString());
 
-  // and for all the tokenids
+  if (epoch == null) {
+    log.debug("Epoch not found: {}", [
+      event.params.nextRevealTimestamp.toHexString()
+    ]);
+    return;
+  }
+
+  // and we add it to the Token entity
+  let token = Token.load(event.params.tokenId.toHexString());
+  if (token == null) {
+    log.debug("Token not found: {}", [event.params.tokenId.toHexString()]);
+    return;
+  }
+  token.epoch = epoch.id;
+  token.save();
 }
