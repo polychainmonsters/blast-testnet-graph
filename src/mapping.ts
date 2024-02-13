@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { log, store, BigInt } from "@graphprotocol/graph-ts";
 import {
   ERC721,
   Transfer as TransferEvent,
@@ -12,6 +12,7 @@ import {
   Contract,
   Transfer,
   Epoch,
+  EpochCounter,
   Transaction
 } from "../generated/schema";
 
@@ -94,14 +95,28 @@ export function handleTransfer(event: TransferEvent): void {
 }
 
 export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
-  // we create a new epoch entity
+  // Use a constant ID for the EpochCounter since there will only be one instance.
+  let counterId = 'epoch-counter';
+  let epochCounter = EpochCounter.load(counterId);
+
+  if (epochCounter == null) {
+    epochCounter = new EpochCounter(counterId);
+    epochCounter.count = BigInt.fromI32(0); // Initialize the count
+  }
+
+  // Increment the count
+  epochCounter.count = epochCounter.count.plus(BigInt.fromI32(1));
+  epochCounter.save();
+
+  // Now, create a new epoch entity using the incremented count
   let epoch = new Epoch(event.params.timestamp.toHexString());
+  epoch.number = epochCounter.count;
   epoch.startBlock = event.block.number;
   epoch.timestamp = event.params.timestamp;
   epoch.save();
-  // generate a new Transaction entity
-  let transaction = new Transaction(event.transaction.hash.toHexString());
 
+  // Generate a new Transaction entity
+  let transaction = new Transaction(event.transaction.hash.toHexString());
   transaction.save();
 }
 

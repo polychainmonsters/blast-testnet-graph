@@ -395,6 +395,46 @@ export class Transfer extends Entity {
   }
 }
 
+export class EpochCounter extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save EpochCounter entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save EpochCounter entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("EpochCounter", id.toString(), this);
+  }
+
+  static load(id: string): EpochCounter | null {
+    return store.get("EpochCounter", id) as EpochCounter | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get count(): BigInt {
+    let value = this.get("count");
+    return value.toBigInt();
+  }
+
+  set count(value: BigInt) {
+    this.set("count", Value.fromBigInt(value));
+  }
+}
+
 export class Epoch extends Entity {
   constructor(id: string) {
     super();
@@ -423,6 +463,15 @@ export class Epoch extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get number(): BigInt {
+    let value = this.get("number");
+    return value.toBigInt();
+  }
+
+  set number(value: BigInt) {
+    this.set("number", Value.fromBigInt(value));
   }
 
   get startBlock(): BigInt {
@@ -515,14 +564,5 @@ export class Transaction extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get hash(): string {
-    let value = this.get("hash");
-    return value.toString();
-  }
-
-  set hash(value: string) {
-    this.set("hash", Value.fromString(value));
   }
 }

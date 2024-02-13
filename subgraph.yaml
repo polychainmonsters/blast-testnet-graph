@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: BondingCurveMons
-    network: polymon-testnet
+    network: blast-testnet
     source:
-      address: '0xfA420e4b18d495105600B18735E80AF32cd87e02'
+      address: '0x5Ec1A8Fef85bb6d00c13F97A0a6eBc071225FC72'
       abi: ERC721
-      startBlock: 25405
+      startBlock: 1532906
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

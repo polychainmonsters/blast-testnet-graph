@@ -35,8 +35,14 @@ type Transfer @entity {
   transactionHash: String!
 }
 
+type EpochCounter @entity {
+  id: ID!
+  count: BigInt!
+}
+
 type Epoch @entity {
   id: ID!
+  number: BigInt!
   startBlock: BigInt!
   endBlock: BigInt
   timestamp: BigInt!
