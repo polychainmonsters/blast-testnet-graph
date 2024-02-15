@@ -5,12 +5,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: BondingCurveMons
-    network: polymon-testnet
+    name: {{name}}
+    network: {{network}}
     source:
-      address: '0xE13baEAdB10b61e91e38A35B3D385d9Bed0EBD34'
+      address: '{{nftAddress}}'
       abi: ERC721
-      startBlock: 27146
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

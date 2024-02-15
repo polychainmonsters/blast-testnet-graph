@@ -1,0 +1,6 @@
+{
+  "network": "polymon-testnet",
+  "name": "BondingCurveMons",
+  "startBlock": 27146,
+  "nftAddress": "0xE13baEAdB10b61e91e38A35B3D385d9Bed0EBD34"
+}
