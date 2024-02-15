@@ -144,7 +144,7 @@ export function handleFulfillEpochRevealed(
   let instance = ERC721.bind(event.address);
 
   log.debug("Fetching URIs for tokens in epoch: {}", [epoch.id]);
-  log.debug("Tokens: {}", [epoch.tokens.join(",")]);
+  log.debug("Tokens: {}", [JSON.stringify(epoch.tokens)]);
 
   let tokens = epoch.tokens;
 
