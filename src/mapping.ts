@@ -120,9 +120,7 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   transaction.save();
 }
 
-export function handleFulfillEpochRevealed(
-  event: FulfillEpochRevealedEvent
-): void {
+export function handleFulfillEpochRevealed(event: FulfillEpochRevealedEvent): void {
   // we fetch the epoch entity
   let epoch = Epoch.load(event.params.timestamp.toHexString());
 
@@ -131,14 +129,32 @@ export function handleFulfillEpochRevealed(
     return;
   }
 
+  // Update the epoch entity with new information
   epoch.endBlock = event.block.number;
   epoch.randomness = event.params.randomness;
   epoch.save();
 
-  // generate a new Transaction entity
+  // Generate a new Transaction entity (assuming this is necessary for your logic)
   let transaction = new Transaction(event.transaction.hash.toHexString());
-
   transaction.save();
+
+  // Assuming you have access to the contract instance to call `try_tokenURI`
+  let instance = Contract.bind(event.address);
+
+  for (let i = 0; i < epoch.tokens.length; i++) {
+    let tokenId = epoch.tokens[i];
+    let token = Token.load(tokenId);
+
+    // Fetch the new URI for each token
+    let uriCallResult = instance.try_tokenURI(BigInt.fromString(token.id));
+    if (!uriCallResult.reverted) {
+      // Update the token URI if the call was successful
+      token.uri = uriCallResult.value;
+      token.save();
+    } else {
+      log.debug("Failed to fetch URI for token: {}", [token.id]);
+    }
+  }
 }
 
 export function handleRevealRequested(event: RevealRequestedEvent): void {
