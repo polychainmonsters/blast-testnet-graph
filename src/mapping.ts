@@ -143,6 +143,9 @@ export function handleFulfillEpochRevealed(
   // Assuming you have access to the contract instance to call `try_tokenURI`
   let instance = ERC721.bind(event.address);
 
+  log.debug("Fetching URIs for tokens in epoch: {}", [epoch.id]);
+  log.debug("Tokens: {}", [epoch.tokens.join(",")]);
+
   let tokens = epoch.tokens;
 
   if (tokens.length == 0) {
