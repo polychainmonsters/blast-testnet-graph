@@ -146,19 +146,19 @@ export function handleFulfillEpochRevealed(
   log.debug("Fetching URIs for tokens in epoch: {}", [epoch.id]);
   log.debug("Tokens: {}", [epoch.tokens.toString()]);
 
-  let tokens = epoch.tokens;
+  let tokenIds = epoch.tokenIds;
 
-  if (tokens.length == 0) {
+  if (tokenIds.length == 0) {
     log.debug("No tokens in epoch: {}", [epoch.id]);
     return;
   }
 
-  for (let i = 0; i < tokens.length; i++) {
-    let tokenId = tokens[i];
-    let token = Token.load(tokenId);
+  for (let i = 0; i < tokenIds.length; i++) {
+    let tokenId = tokenIds[i];
+    let token = Token.load(tokenId.toString());
 
     if (token == null) {
-      log.debug("Token not found: {}", [tokenId]);
+      log.debug("Token not found: {}", [tokenId.toString()]);
       continue;
     }
 
@@ -184,6 +184,11 @@ export function handleRevealRequested(event: RevealRequestedEvent): void {
     ]);
     return;
   }
+
+  // add the token ID to the epoch entity
+  let tokenIds = epoch.tokenIds;
+  tokenIds.push(event.params.tokenId);
+  epoch.tokenIds = tokenIds;
 
   // and we add it to the Token entity
   let token = Token.load(event.params.tokenId.toHexString());

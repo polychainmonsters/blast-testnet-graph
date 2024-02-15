@@ -48,6 +48,7 @@ type Epoch @entity {
   timestamp: BigInt!
   randomness: BigInt
   tokens: [Token!]! @derivedFrom(field: "epoch")
+  tokenIds: [BigInt!]!
 }
 
 type Transaction @entity {

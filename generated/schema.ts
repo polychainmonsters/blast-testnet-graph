@@ -534,6 +534,15 @@ export class Epoch extends Entity {
   set tokens(value: Array<string>) {
     this.set("tokens", Value.fromStringArray(value));
   }
+
+  get tokenIds(): Array<BigInt> {
+    let value = this.get("tokenIds");
+    return value.toBigIntArray();
+  }
+
+  set tokenIds(value: Array<BigInt>) {
+    this.set("tokenIds", Value.fromBigIntArray(value));
+  }
 }
 
 export class Transaction extends Entity {
