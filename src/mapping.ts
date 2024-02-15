@@ -96,7 +96,7 @@ export function handleTransfer(event: TransferEvent): void {
 
 export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   // Use a constant ID for the EpochCounter since there will only be one instance.
-  let counterId = 'epoch-counter';
+  let counterId = "epoch-counter";
   let epochCounter = EpochCounter.load(counterId);
 
   if (epochCounter == null) {
@@ -120,7 +120,9 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   transaction.save();
 }
 
-export function handleFulfillEpochRevealed(event: FulfillEpochRevealedEvent): void {
+export function handleFulfillEpochRevealed(
+  event: FulfillEpochRevealedEvent
+): void {
   // we fetch the epoch entity
   let epoch = Epoch.load(event.params.timestamp.toHexString());
 
@@ -139,11 +141,23 @@ export function handleFulfillEpochRevealed(event: FulfillEpochRevealedEvent): vo
   transaction.save();
 
   // Assuming you have access to the contract instance to call `try_tokenURI`
-  let instance = Contract.bind(event.address);
+  let instance = ERC721.bind(event.address);
 
-  for (let i = 0; i < epoch.tokens.length; i++) {
-    let tokenId = epoch.tokens[i];
+  let tokens = epoch.tokens;
+
+  if (tokens.length == 0) {
+    log.debug("No tokens in epoch: {}", [epoch.id]);
+    return;
+  }
+
+  for (let i = 0; i < tokens.length; i++) {
+    let tokenId = tokens[i];
     let token = Token.load(tokenId);
+
+    if (token == null) {
+      log.debug("Token not found: {}", [tokenId]);
+      continue;
+    }
 
     // Fetch the new URI for each token
     let uriCallResult = instance.try_tokenURI(BigInt.fromString(token.id));
