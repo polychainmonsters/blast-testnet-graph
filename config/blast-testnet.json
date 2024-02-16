@@ -1,0 +1,6 @@
+{
+  "network": "blast-testnet",
+  "name": "BondingCurveMons",
+  "startBlock": 1693166,
+  "nftAddress": "0x8Ab682CCF3A6354CAc59d12093d95B80E10F84E3"
+}

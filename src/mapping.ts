@@ -113,6 +113,7 @@ export function handleNewEpochScheduled(event: NewEpochScheduledEvent): void {
   epoch.number = epochCounter.count;
   epoch.startBlock = event.block.number;
   epoch.timestamp = event.params.timestamp;
+  epoch.tokenIds = new Array<BigInt>();
   epoch.save();
 
   // Generate a new Transaction entity
@@ -143,9 +144,6 @@ export function handleFulfillEpochRevealed(
   // Assuming you have access to the contract instance to call `try_tokenURI`
   let instance = ERC721.bind(event.address);
 
-  log.debug("Fetching URIs for tokens in epoch: {}", [epoch.id]);
-  log.debug("Tokens: {}", [epoch.tokens.toString()]);
-
   let tokenIds = epoch.tokenIds;
 
   if (tokenIds.length == 0) {
@@ -155,15 +153,15 @@ export function handleFulfillEpochRevealed(
 
   for (let i = 0; i < tokenIds.length; i++) {
     let tokenId = tokenIds[i];
-    let token = Token.load(tokenId.toString());
+    let token = Token.load(tokenId.toHexString());
 
     if (token == null) {
-      log.debug("Token not found: {}", [tokenId.toString()]);
+      log.debug("Token not found: {}", [tokenId.toHexString()]);
       continue;
     }
 
     // Fetch the new URI for each token
-    let uriCallResult = instance.try_tokenURI(BigInt.fromString(token.id));
+    let uriCallResult = instance.try_tokenURI(tokenId);
     if (!uriCallResult.reverted) {
       // Update the token URI if the call was successful
       token.uri = uriCallResult.value;
@@ -187,8 +185,12 @@ export function handleRevealRequested(event: RevealRequestedEvent): void {
 
   // add the token ID to the epoch entity
   let tokenIds = epoch.tokenIds;
+  if (tokenIds == null) {
+    tokenIds = new Array<BigInt>();
+  }
   tokenIds.push(event.params.tokenId);
   epoch.tokenIds = tokenIds;
+  epoch.save();
 
   // and we add it to the Token entity
   let token = Token.load(event.params.tokenId.toHexString());
